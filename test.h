@@ -17,6 +17,7 @@ public:
     void setBatchNumber(const QString &value);
     QDateTime getDate() const;
     void setDate(const QDateTime &value);
+    inline bool operator<(const Test &t);
 
 private:
     QDateTime date;

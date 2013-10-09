@@ -49,6 +49,11 @@ void Test::setDate(const QDateTime &value)
     date = value;
 }
 
+inline bool Test::operator<(const Test &t)
+{
+    return date < t.getDate();
+}
+
 
 
 

@@ -196,6 +196,8 @@ void Converter::convertAndSave(QString fileName){
         }
     }
 
+    qSort(tests.begin(), tests.end(), testLessThan);
+
     //write header
     QTextStream out(&file);
     out << "Item,Low limit,High limit";
@@ -213,7 +215,10 @@ void Converter::convertAndSave(QString fileName){
     progressDialog->setMaximum(components.count());
     progressDialog->setLabelText("Saving data...");
     progressDialog->setAutoClose(true);
-    foreach(Component* component, components.values()){
+    QList<QString> keys = components.keys();
+    qSort(keys.begin(), keys.end(), naturalCompare);
+    foreach(QString name, keys){
+        Component *component = components.value(name);
         out << "\"" + component->getName() + "\",";
         out << component->getLowLimit() + ",";
         out << component->getHighLimit();
