@@ -17,6 +17,7 @@ public:
 
 private:
     Ui::MainWindow *ui;
+    QString lastLocation;
 
 private slots:
     void addFiles();

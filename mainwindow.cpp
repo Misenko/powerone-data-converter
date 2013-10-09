@@ -19,6 +19,8 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->fileNamesListWidget, SIGNAL(itemSelectionChanged()), this, SLOT(fileSelected()));
     connect(ui->convertButton, SIGNAL(clicked()), this, SLOT(convertFiles()));
     connect(ui->outputFileToolButton, SIGNAL(clicked()), this, SLOT(selectOutputFile()));
+
+    lastLocation = QDir::homePath();
 }
 
 MainWindow::~MainWindow()
@@ -30,10 +32,13 @@ void MainWindow::addFiles(){
     QStringList files = QFileDialog::getOpenFileNames(
                             this,
                             "Select one or more files to open",
-                            QDir::homePath(),
+                            lastLocation,
                             tr("Web pages (*.html *.xhtml *.htm)"));
     if(!files.empty()){
         ui->fileNamesListWidget->addItems(files);
+
+        QFileInfo fileInfo(files.at(0));
+        lastLocation = fileInfo.absoluteDir().absolutePath();
     }
 }
 
