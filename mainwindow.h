@@ -4,11 +4,10 @@
 #include <QMainWindow>
 
 namespace Ui {
-class MainWindow;
+    class MainWindow;
 }
 
-class MainWindow : public QMainWindow
-{
+class MainWindow : public QMainWindow {
     Q_OBJECT
 
 public:
@@ -17,7 +16,8 @@ public:
 
 private:
     Ui::MainWindow *ui;
-    QString lastLocation;
+    QString lastInputLocation;
+    QString lastOutputLocation;
 
 private slots:
     void addFiles();

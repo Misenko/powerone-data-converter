@@ -14,3 +14,11 @@
 
 # QT Creator project files
 *.pro.user
+/dist/
+/build/
+
+# NetBeans files
+/nbproject/
+moc_*
+ui_*
+.dep.inc

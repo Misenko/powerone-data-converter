@@ -8,9 +8,8 @@
 #include <QMessageBox>
 
 MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow)
-{
+QMainWindow(parent),
+ui(new Ui::MainWindow) {
     ui->setupUi(this);
 
     connect(ui->addFilesButton, SIGNAL(clicked()), this, SLOT(addFiles()));
@@ -20,71 +19,77 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->convertButton, SIGNAL(clicked()), this, SLOT(convertFiles()));
     connect(ui->outputFileToolButton, SIGNAL(clicked()), this, SLOT(selectOutputFile()));
 
-    lastLocation = QDir::homePath();
+    lastInputLocation = QDir::homePath();
+    lastOutputLocation = QDir::homePath();
 }
 
-MainWindow::~MainWindow()
-{
+MainWindow::~MainWindow() {
     delete ui;
 }
 
-void MainWindow::addFiles(){
+void MainWindow::addFiles() {
     QStringList files = QFileDialog::getOpenFileNames(
-                            this,
-                            "Select one or more files to open",
-                            lastLocation,
-                            tr("Web pages (*.html *.xhtml *.htm)"));
-    if(!files.empty()){
+            this,
+            "Select one or more files to open",
+            lastInputLocation,
+            tr("Web pages (*.html *.xhtml *.htm)"));
+    if (!files.empty()) {
         ui->fileNamesListWidget->addItems(files);
 
         QFileInfo fileInfo(files.at(0));
-        lastLocation = fileInfo.absoluteDir().absolutePath();
+        lastInputLocation = fileInfo.absoluteDir().absolutePath();
     }
 }
 
-void MainWindow::removeFiles(){
+void MainWindow::removeFiles() {
     qDeleteAll(ui->fileNamesListWidget->selectedItems());
     ui->removeFilesButton->setEnabled(false);
 }
 
-void MainWindow::clearFiles(){
+void MainWindow::clearFiles() {
     ui->fileNamesListWidget->clear();
     ui->removeFilesButton->setEnabled(false);
 }
 
-void MainWindow::fileSelected(){
-    if(ui->fileNamesListWidget->selectedItems().count() != 0){
+void MainWindow::fileSelected() {
+    if (ui->fileNamesListWidget->selectedItems().count() != 0) {
 
         ui->removeFilesButton->setEnabled(true);
-    }
-    else
+    } else
         ui->removeFilesButton->setEnabled(false);
 }
 
-void MainWindow::selectOutputFile(){
+void MainWindow::selectOutputFile() {
     QString fileName = QFileDialog::getSaveFileName(this, tr("Select output file"),
-                               QDir::homePath(),
-                               tr("CSV file(*.csv)"));
+            lastOutputLocation,
+            tr("CSV file(*.csv)"));
     QRegExp re("\\..*$");
-    if(!fileName.isEmpty() && !fileName.contains(re)){
+    if (!fileName.isEmpty() && !fileName.contains(re)) {
         fileName.append(".csv");
     }
+
+    if (!fileName.isEmpty()) {
+        QFileInfo fileInfo(fileName);
+        lastOutputLocation = fileInfo.absoluteDir().absolutePath();
+    }
+
     ui->outputFileLineEdit->setText(fileName);
 }
 
-void MainWindow::convertFiles(){
-    if(ui->fileNamesListWidget->count() == 0){
+void MainWindow::convertFiles() {
+    if (ui->fileNamesListWidget->count() == 0) {
         QMessageBox::critical(this, tr("No input files"), tr("There are no input files to convert."), QMessageBox::Close, QMessageBox::Close);
         return;
     }
 
-    if(ui->outputFileLineEdit->text().isEmpty()){
+    if (ui->outputFileLineEdit->text().isEmpty()) {
         QMessageBox::critical(this, tr("No output file"), tr("The output file was not chosen."), QMessageBox::Close, QMessageBox::Close);
         return;
     }
 
     QStringList fileNames;
-    foreach(QListWidgetItem *item, ui->fileNamesListWidget->findItems("*", Qt::MatchWildcard)){
+
+    foreach(QListWidgetItem *item, ui->fileNamesListWidget->findItems("*", Qt::MatchWildcard)) {
         fileNames.append(item->text());
     }
 

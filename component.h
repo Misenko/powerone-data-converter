@@ -5,8 +5,7 @@
 #include <QString>
 #include <QHash>
 
-class Component
-{
+class Component {
 public:
     Component();
     QString getName() const;

@@ -3,8 +3,7 @@
 
 #include <QDate>
 
-class Test
-{
+class Test {
 public:
     Test();
     QString getResult() const;
@@ -27,13 +26,11 @@ private:
     QString result;
 };
 
-inline bool operator==(const Test &t1, const Test &t2)
-{
+inline bool operator==(const Test &t1, const Test &t2) {
     return t1.getDate() == t2.getDate();
 }
 
-inline uint qHash(const Test &key, uint seed)
-{
+inline uint qHash(const Test &key, uint seed) {
     return qHash(key.getDate(), seed);
 }
 
