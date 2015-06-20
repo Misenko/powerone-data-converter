@@ -96,9 +96,9 @@ void Converter::loadData(QStringList fileNames) {
 
             //checking name field
             QString name = NULL;
-            if ((reList.at(0)->indexIn(line, 0)) != -1){
+            if ((reList.at(0)->indexIn(line, 0)) != -1) {
                 name = reList.at(0)->cap(1);
-            }else if ((reList.at(1)->indexIn(line, 0)) != -1){
+            } else if ((reList.at(1)->indexIn(line, 0)) != -1) {
                 name = reList.at(1)->cap(1);
             }
 
@@ -155,6 +155,7 @@ void Converter::loadData(QStringList fileNames) {
                 hasLowLimit = true;
                 if (component->getLowLimit().isEmpty())
                     component->setLowLimit(reList.at(4)->cap(1));
+                fail = false;
             }
 
             //checking high limit field
@@ -165,7 +166,6 @@ void Converter::loadData(QStringList fileNames) {
                 hasHighLimit = true;
                 if (component->getHighLimit().isEmpty())
                     component->setHighLimit(reList.at(5)->cap(1));
-                fail = false;
             }
 
             line = in.readLine();
@@ -309,6 +309,8 @@ void Converter::convertAndSave(QString fileName) {
         qSort(files);
         if (openingErrors != files) {
             QMessageBox::information((QWidget*) parent(), tr("Done"), tr("The conversion of remaining files was successfull."), QMessageBox::Ok, QMessageBox::Ok);
+        } else {
+            file.remove();
         }
     } else {
         QMessageBox::information((QWidget*) parent(), tr("Done"), tr("The conversion was successfull."), QMessageBox::Ok, QMessageBox::Ok);
