@@ -87,6 +87,7 @@ void Converter::loadData(QStringList fileNames) {
         Component *component = NULL;
         reList.clear();
         reList.append(new QRegExp("<A NAME=.*>(.*)</A>", Qt::CaseInsensitive, QRegExp::RegExp2));
+        reList.append(new QRegExp("(Test\\s*[0-9]+:.*)", Qt::CaseInsensitive, QRegExp::RegExp2));
         reList.append(new QRegExp("Status:.*>(.*)", Qt::CaseInsensitive, QRegExp::RegExp2));
         reList.append(new QRegExp("Measurement:.*>(.*)", Qt::CaseInsensitive, QRegExp::RegExp2));
         reList.append(new QRegExp("Low:.*>(.*)", Qt::CaseInsensitive, QRegExp::RegExp2));
@@ -94,8 +95,15 @@ void Converter::loadData(QStringList fileNames) {
         while (!in.atEnd()) {
 
             //checking name field
-            if ((reList.at(0)->indexIn(line, 0)) != -1) {
-                if (reList.at(0)->cap(1) == "SequenceCall") {
+            QString name = NULL;
+            if ((reList.at(0)->indexIn(line, 0)) != -1){
+                name = reList.at(0)->cap(1);
+            }else if ((reList.at(1)->indexIn(line, 0)) != -1){
+                name = reList.at(1)->cap(1);
+            }
+
+            if (name != NULL) {
+                if (name == "SequenceCall") {
                     line = in.readLine();
                     continue;
                 }
@@ -104,11 +112,11 @@ void Converter::loadData(QStringList fileNames) {
                     components.insert(component->getName(), component);
                 }
 
-                if (components.contains(reList.at(0)->cap(1))) {
-                    component = components.value(reList.at(0)->cap(1));
+                if (components.contains(name)) {
+                    component = components.value(name);
                 } else {
                     component = new Component();
-                    component->setName(reList.at(field)->cap(1));
+                    component->setName(name);
                 }
 
                 hasStatus = false;
@@ -118,8 +126,8 @@ void Converter::loadData(QStringList fileNames) {
             }
 
             //checking status field
-            if ((reList.at(1)->indexIn(line, 0)) != -1) {
-                if (reList.at(1)->cap(1).contains("Skipped")) {
+            if ((reList.at(2)->indexIn(line, 0)) != -1) {
+                if (reList.at(2)->cap(1).contains("Skipped")) {
                     if (component->isEmpty())
                         delete component;
                     component = NULL;
@@ -132,31 +140,31 @@ void Converter::loadData(QStringList fileNames) {
             }
 
             //checking measurement field
-            if ((reList.at(2)->indexIn(line, 0)) != -1) {
+            if ((reList.at(3)->indexIn(line, 0)) != -1) {
                 if (component->hasMeasurement(test))
                     break;
 
-                component->addMeasurement(test, reList.at(2)->cap(1));
+                component->addMeasurement(test, reList.at(3)->cap(1));
             }
 
             //checking low limit field
-            if ((reList.at(3)->indexIn(line, 0)) != -1) {
+            if ((reList.at(4)->indexIn(line, 0)) != -1) {
                 if (hasLowLimit)
                     break;
 
                 hasLowLimit = true;
                 if (component->getLowLimit().isEmpty())
-                    component->setLowLimit(reList.at(3)->cap(1));
+                    component->setLowLimit(reList.at(4)->cap(1));
             }
 
             //checking high limit field
-            if ((reList.at(4)->indexIn(line, 0)) != -1) {
+            if ((reList.at(5)->indexIn(line, 0)) != -1) {
                 if (hasHighLimit)
                     break;
 
                 hasHighLimit = true;
                 if (component->getHighLimit().isEmpty())
-                    component->setHighLimit(reList.at(4)->cap(1));
+                    component->setHighLimit(reList.at(5)->cap(1));
                 fail = false;
             }
 
@@ -164,6 +172,7 @@ void Converter::loadData(QStringList fileNames) {
         }
 
         if (fail) {
+            qDebug() << line;
             parsingErrors.append(fileName);
             file.close();
             continue;
