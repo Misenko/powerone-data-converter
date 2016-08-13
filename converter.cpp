@@ -133,6 +133,11 @@ void Converter::loadData(QStringList fileNames) {
                     component = NULL;
                 }
 
+                if (reList.at(2)->cap(1).contains("Done")) {
+                    line = in.readLine();
+                    continue;
+                }
+
                 if (hasStatus)
                     break;
 
